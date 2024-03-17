@@ -39,18 +39,18 @@ export async function assetsRoutes(fastify, options) {
     })
 
     fastify.post('/assets', async (request, reply) => {
-        const { user_id, ticker_symbol, purchase_date, quantity, purchase_price, purchase_currency, notes } = request.body
+        const { user_id, description, ticker_symbol, purchase_date, quantity, purchase_price, purchase_currency, notes } = request.body
 
         try {
-            if (!user_id || !ticker_symbol || !purchase_date || !quantity || !purchase_price || !purchase_currency) {
+            if (!user_id || !description || !ticker_symbol || !purchase_date || !quantity || !purchase_price || !purchase_currency) {
                 throw { message: 'Faltou alguma informação!' }
             }
 
             const client = await pool.connect()
 
-            const sql = 'INSERT INTO assets (user_id, ticker_symbol, purchase_date, quantity, purchase_price, purchase_currency, notes) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *'
+            const sql = 'INSERT INTO assets (user_id, description, ticker_symbol, purchase_date, quantity, purchase_price, purchase_currency, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *'
 
-            const { rows } = await client.query(sql, [user_id, ticker_symbol, purchase_date, quantity, purchase_price, purchase_currency, notes])
+            const { rows } = await client.query(sql, [user_id, description, ticker_symbol, purchase_date, quantity, purchase_price, purchase_currency, notes])
 
             client.release()
 
@@ -73,11 +73,11 @@ export async function assetsRoutes(fastify, options) {
     
             const client = await pool.connect()
 
-            const sql = 'UPDATE assets SET user_id = $1, ticker_symbol = $2, purchase_date = $3, quantity = $4, purchase_price = $5, purchase_currency = $6, notes = $7 WHERE id = $8 RETURNING *'
+            const sql = 'UPDATE assets SET user_id = $1, ticker_symbol = $2, purchase_date = $3, quantity = $4, purchase_price = $5, purchase_currency = $6, notes = $7, description = $8 WHERE id = $9 RETURNING *'
 
             const result = await client.query(
                 sql,
-                [user_id, ticker_symbol, purchase_date, quantity, purchase_price, purchase_currency, notes, id]
+                [user_id, ticker_symbol, purchase_date, quantity, purchase_price, purchase_currency, notes, description, id]
             )
 
             client.release()
